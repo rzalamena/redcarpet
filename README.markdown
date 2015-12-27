@@ -7,6 +7,18 @@ Redcarpet is written with sugar, spice and everything nice
 Redcarpet is a Ruby library for Markdown processing that smells like
 butterflies and popcorn.
 
+rzalamena note: this branch (video-tag) is being maintained by me to
+support video tag markdown.
+
+If you want to use the video-tag markdown, modify your gemfile to include
+this github repo and use the following markdown:
+Look this video: \#\[awesome video\]\(http://foobar.com/example.mp4\)
+
+This will create a HTML5 video tag that has a src= pointing to example.mp4.
+
+Gemfile line for reference:
+gem 'redcarpet', git: 'https://github.com/rzalamena/redcarpet.git', branch: 'video-tag'
+
 This library is written by people
 ---------------------------------
 
