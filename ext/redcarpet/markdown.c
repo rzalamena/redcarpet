@@ -1002,6 +1002,7 @@ static size_t
 char_link(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset, size_t size)
 {
 	int is_img = (offset && data[-1] == '!'), level;
+	int is_video = (offset && data[-1] == '#');
 	size_t i = 1, txt_e, link_b = 0, link_e = 0, title_b = 0, title_e = 0;
 	struct buf *content = 0;
 	struct buf *link = 0;
@@ -1013,6 +1014,9 @@ char_link(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset
 
 	/* checking whether the correct renderer exists */
 	if ((is_img && !rndr->cb.image) || (!is_img && !rndr->cb.link))
+		goto cleanup;
+	if ((is_video && rndr->cb.video == NULL) ||
+	    (is_video == 0 && rndr->cb.video))
 		goto cleanup;
 
 	/* looking for the matching closing bracket */
@@ -1259,6 +1263,11 @@ char_link(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset
 			ob->size -= 1;
 
 		ret = rndr->cb.image(ob, u_link, title, content, rndr->opaque);
+	} else if (is_video) {
+		if (ob->size && ob->data[ob->size - 1] == '#')
+			ob->size -= 1;
+
+		ret = rndr->cb.video(ob, u_link, title, content, rndr->opaque);
 	} else {
 		ret = rndr->cb.link(ob, u_link, title, content, rndr->opaque);
 	}
@@ -2769,7 +2778,7 @@ sd_markdown_new(
 	if (md->cb.linebreak)
 		md->active_char['\n'] = MD_CHAR_LINEBREAK;
 
-	if (md->cb.image || md->cb.link)
+	if (md->cb.image || md->cb.video || md->cb.link)
 		md->active_char['['] = MD_CHAR_LINK;
 
 	md->active_char['<'] = MD_CHAR_LANGLE;

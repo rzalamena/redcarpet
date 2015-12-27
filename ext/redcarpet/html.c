@@ -494,6 +494,34 @@ rndr_image(struct buf *ob, const struct buf *link, const struct buf *title, cons
 }
 
 static int
+rndr_video(struct buf *ob, const struct buf *link, const struct buf *title,
+    const struct buf *alt, void *opaque)
+{
+	struct html_renderopt *options = opaque;
+
+	if (link && (options->flags & HTML_SAFELINK) &&
+	    sd_autolink_issafe(link->data, link->size) == 0)
+		return 0;
+
+	BUFPUTSL(ob, "<video src=\"");
+	if (link && link->size)
+		escape_href(ob, link->data, link->size);
+
+	BUFPUTSL(ob, "\" alt=\"");
+
+	if (alt && alt->size)
+		escape_html(ob, alt->data, alt->size);
+
+	if (title && title->size) {
+		BUFPUTSL(ob, "\" title=\"");
+		escape_html(ob, title->data, title->size);
+	}
+
+	bufputs(ob, USE_XHTML(options) ? "\"/>" : "\">");
+	return 1;
+}
+
+static int
 rndr_raw_html(struct buf *ob, const struct buf *text, void *opaque)
 {
 	struct html_renderopt *options = opaque;
@@ -789,6 +817,7 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 		rndr_highlight,
 		rndr_quote,
 		rndr_image,
+		rndr_video,
 		rndr_linebreak,
 		rndr_link,
 		rndr_raw_html,
