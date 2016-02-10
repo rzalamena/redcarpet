@@ -1016,7 +1016,7 @@ char_link(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t offset
 	if ((is_img && !rndr->cb.image) || (!is_img && !rndr->cb.link))
 		goto cleanup;
 	if ((is_video && rndr->cb.video == NULL) ||
-	    (is_video == 0 && rndr->cb.video))
+	    (is_video == 0 && rndr->cb.link == NULL))
 		goto cleanup;
 
 	/* looking for the matching closing bracket */
