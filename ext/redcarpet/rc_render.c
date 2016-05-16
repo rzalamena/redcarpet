@@ -208,6 +208,12 @@ rndr_video(struct buf *ob, const struct buf *link, const struct buf *title, cons
 }
 
 static int
+rndr_youtube(struct buf *ob, const struct buf *link, const struct buf *title, const struct buf *alt, void *opaque)
+{
+	SPAN_CALLBACK("youtube", 3, buf2str(link), buf2str(title), buf2str(alt));
+}
+
+static int
 rndr_linebreak(struct buf *ob, void *opaque)
 {
 	SPAN_CALLBACK("linebreak", 0);
@@ -321,6 +327,7 @@ static struct sd_callbacks rb_redcarpet_callbacks = {
 	rndr_quote,
 	rndr_image,
 	rndr_video,
+	rndr_youtube,
 	rndr_linebreak,
 	rndr_link,
 	rndr_raw_html,
@@ -360,6 +367,7 @@ static const char *rb_redcarpet_method_names[] = {
 	"quote",
 	"image",
 	"video",
+	"youtube",
 	"linebreak",
 	"link",
 	"raw_html",

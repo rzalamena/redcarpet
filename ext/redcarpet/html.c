@@ -522,6 +522,35 @@ rndr_video(struct buf *ob, const struct buf *link, const struct buf *title,
 }
 
 static int
+rndr_youtube(struct buf *ob, const struct buf *link, const struct buf *title,
+    const struct buf *alt, void *opaque)
+{
+	struct html_renderopt *options = opaque;
+
+	BUFPUTSL(ob, "<div class=\"youtube-wrapper\">"
+	    "<iframe src=\"https://www.youtube.com/embed/");
+	if (link && link->size)
+		escape_href(ob, link->data, link->size);
+
+	BUFPUTSL(ob, "\" frameborder=\"0\" allowfullscreen></iframe>");
+
+	if (alt && alt->size) {
+		BUFPUTSL(ob, "<div class=\"alt\">");
+		escape_html(ob, alt->data, alt->size);
+		BUFPUTSL(ob, "</div>");
+	}
+
+	if (title && title->size) {
+		BUFPUTSL(ob, "<div class=\"title\">");
+		escape_html(ob, title->data, title->size);
+		BUFPUTSL(ob, "</div>");
+	}
+
+	bufputs(ob, "</div>");
+	return 1;
+}
+
+static int
 rndr_raw_html(struct buf *ob, const struct buf *text, void *opaque)
 {
 	struct html_renderopt *options = opaque;
@@ -818,6 +847,7 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
 		rndr_quote,
 		rndr_image,
 		rndr_video,
+		rndr_youtube,
 		rndr_linebreak,
 		rndr_link,
 		rndr_raw_html,
