@@ -528,11 +528,12 @@ rndr_youtube(struct buf *ob, const struct buf *link, const struct buf *title,
 	struct html_renderopt *options = opaque;
 
 	BUFPUTSL(ob, "<div class=\"youtube-wrapper\">"
+	    "<div class=\"frame-wrapper\">"
 	    "<iframe src=\"https://www.youtube.com/embed/");
 	if (link && link->size)
 		escape_href(ob, link->data, link->size);
 
-	BUFPUTSL(ob, "\" frameborder=\"0\" allowfullscreen></iframe>");
+	BUFPUTSL(ob, "\" frameborder=\"0\" allowfullscreen></iframe></div>");
 
 	if (alt && alt->size) {
 		BUFPUTSL(ob, "<div class=\"alt\">");
